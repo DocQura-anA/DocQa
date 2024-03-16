@@ -33,27 +33,6 @@ export const ourFileRouter = {
       });
 
       try {
-        // const response = await fetch(file.url);
-        // const blob = await response.blob();
-
-        // const loader = new PDFLoader(blob);
-        // const pageLevelDocs = await loader.load();
-        // const pagesAmt = pageLevelDocs.length;
-        // const pinecone = await getPineconeClient();
-        // const pineconeIndex = (await pinecone).Index('chatPdf');
-
-        // const embeddings = new OpenAIEmbeddings({
-        //   openAIApiKey: process.env.OPENAI_API_KEY,
-        // });
-
-        // // const index = pinecone.index('chatpdf');
-
-        // // await index.namespace(createdFile.id).upsert();
-
-        // await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
-        //   pineconeIndex,
-        //   namespace: createdFile.id,
-        // });
         const data = {
           document_id: file.url,
         };

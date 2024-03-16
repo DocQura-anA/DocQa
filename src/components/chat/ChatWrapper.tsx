@@ -22,9 +22,9 @@ const ChatWrapper = ({ fileId, isSubscribed }: ChatWrapperProps) => {
     },
 
     {
-      refetchInterval: (data: any) => {
+      refetchInterval: (data) => {
         console.log(data);
-        return data.status === 'SUCCESS' || data.status === 'FAILED' // FIX this later
+        return data.state.status == 'success' || data.state.status === 'error' // FIX this later
           ? false
           : 500;
       },
