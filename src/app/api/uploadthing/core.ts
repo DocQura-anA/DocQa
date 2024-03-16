@@ -2,11 +2,11 @@ import { db } from '@/db';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { createUploadthing, type FileRouter } from 'uploadthing/next';
 import { UploadThingError } from 'uploadthing/server';
-// import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
+import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
 import { Pinecone } from '@pinecone-database/pinecone';
 import { getPineconeClient } from '@/lib/pinecone';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
-import { PineconeStore } from 'langchain/vectorstores/pinecone';
+import { PineconeStore } from '@langchain/pinecone';
 
 const f = createUploadthing();
 
@@ -33,23 +33,48 @@ export const ourFileRouter = {
       });
 
       try {
-        const response = await fetch(file.url);
-        const blob = await response.blob();
+        // const response = await fetch(file.url);
+        // const blob = await response.blob();
 
         // const loader = new PDFLoader(blob);
         // const pageLevelDocs = await loader.load();
         // const pagesAmt = pageLevelDocs.length;
-        // const pinecone = getPineconeClient();
-        // const pineconeIndex = (await pinecone).Index('pdfs');
+        // const pinecone = await getPineconeClient();
+        // const pineconeIndex = (await pinecone).Index('chatPdf');
 
-        const embeddings = new OpenAIEmbeddings({
-          openAIApiKey: process.env.OPENAI_API_KEY,
-        });
+        // const embeddings = new OpenAIEmbeddings({
+        //   openAIApiKey: process.env.OPENAI_API_KEY,
+        // });
+
+        // // const index = pinecone.index('chatpdf');
+
+        // // await index.namespace(createdFile.id).upsert();
 
         // await PineconeStore.fromDocuments(pageLevelDocs, embeddings, {
         //   pineconeIndex,
         //   namespace: createdFile.id,
         // });
+        const data = {
+          document_id: file.url,
+        };
+        const response = await fetch('http://localhost:8000/upload', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        if (response.status !== 200) {
+          await db.file.update({
+            data: {
+              uploadStatus: 'FAILED',
+            },
+            where: {
+              id: createdFile.id,
+            },
+          });
+        }
 
         await db.file.update({
           data: {

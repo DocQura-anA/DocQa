@@ -39,4 +39,14 @@ export const POST = async (req: NextRequest) => {
       fileId,
     },
   });
+
+  const prevMessages = await db.message.findMany({
+    where: {
+      fileId,
+    },
+    orderBy: {
+      createdAt: 'asc',
+    },
+    take: 6,
+  });
 };

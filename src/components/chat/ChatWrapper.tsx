@@ -20,9 +20,11 @@ const ChatWrapper = ({ fileId, isSubscribed }: ChatWrapperProps) => {
     {
       fileId,
     },
+
     {
       refetchInterval: (data: any) => {
-        return data.status === 'SUCCESS' || data.status === 'FAILED' // FIx this later
+        console.log(data);
+        return data.status === 'SUCCESS' || data.status === 'FAILED' // FIX this later
           ? false
           : 500;
       },
