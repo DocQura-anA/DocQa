@@ -20,7 +20,7 @@ import { useToast } from './ui/use-toast';
 import { useResizeDetector } from 'react-resize-detector';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { useState } from 'react';
+import { SetStateAction, useCallback, useState } from 'react';
 
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -51,6 +51,25 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
   const [scale, setScale] = useState<number>(1);
   const [rotation, setRotation] = useState<number>(0);
   const [renderedScale, setRenderedScale] = useState<number | null>(null);
+
+  function highlightPattern(text: string, pattern: any) {
+    return text.replace(
+      pattern,
+      (value) =>
+        `<mark class="opacity-50 bg-yellow-500 shadow-md text-transparent whitespace-pre">${value}</mark>`,
+    );
+  }
+
+  const [searchText, setSearchText] = useState('');
+
+  const textRenderer = useCallback(
+    (textItem: { str: string }) => highlightPattern(textItem.str, searchText),
+    [searchText],
+  );
+
+  function onChange(event: { target: { value: SetStateAction<string> } }) {
+    setSearchText(event.target.value);
+  }
 
   const isLoading = renderedScale !== scale;
 
@@ -190,6 +209,41 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
               file={url}
               className="max-h-full"
             >
+              {new Array(numPages).fill(0).map((_, i) => (
+                <Page
+                  key={i}
+                  width={width ? width : 1}
+                  pageNumber={currPage}
+                  scale={scale}
+                  rotate={rotation}
+                  loading={
+                    <div className="flex justify-center">
+                      <Loader2 className="my-24 h-6 w-6 animate-spin" />
+                    </div>
+                  }
+                  // pageNumber={i + 1}
+                  customTextRenderer={textRenderer}
+                />
+              ))}
+            </Document>
+
+            {/* <Document
+              loading={
+                <div className="flex justify-center">
+                  <Loader2 className="my-24 h-6 w-6 animate-spin" />
+                </div>
+              }
+              onLoadError={() => {
+                toast({
+                  title: 'Error loading PDF',
+                  description: 'Please try again later',
+                  variant: 'destructive',
+                });
+              }}
+              onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+              file={url}
+              className="max-h-full"
+            >
               {isLoading && renderedScale ? (
                 <Page
                   width={width ? width : 1}
@@ -214,9 +268,19 @@ const PdfRenderer = ({ url }: PdfRendererProps) => {
                 }
                 onRenderSuccess={() => setRenderedScale(scale)}
               />
-            </Document>
+            </Document> */}
           </div>
         </SimpleBar>
+      </div>
+
+      <div>
+        <label htmlFor="search">Search:</label>
+        <input
+          type="search"
+          id="search"
+          value={searchText}
+          onChange={onChange}
+        />
       </div>
     </div>
   );

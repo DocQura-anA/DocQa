@@ -57,7 +57,7 @@ export const POST = async (req: NextRequest) => {
   const data = {
     query: message,
     document_id: file.url,
-    context_window: '',
+    // context_window: '',
   };
   console.log(data);
   const res = await fetch('http://localhost:8000/query', {
